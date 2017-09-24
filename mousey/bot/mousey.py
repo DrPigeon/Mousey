@@ -40,12 +40,15 @@ class Mousey(commands.AutoShardedBot):
     """
     def __init__(self, *args, **kwargs):
         description = "Discord Bot written by FrostLuma#0005 to provide powerful moderation and utility features."
+        game = discord.Game(name='beep boop')
+
         super().__init__(
             approve_emoji=APPROVE_EMOJI_ID,
             prefixless_dms=True,
             command_prefix=get_prefix,
             formatter=HelpFormatter(),
             description=description,
+            game=game,
             *args, **kwargs
         )
 
@@ -93,6 +96,10 @@ class Mousey(commands.AutoShardedBot):
     async def is_admin(self, user: Union[discord.Member, discord.User]):
         return user.id in BOT_OWNERS  # todo: allow adding more admins via commands, store them
 
+    async def get_config(self, guild: discord.Guild) -> dict:
+        """Returns the config for a specified guild."""
+        return await self.get_cog('Config').get(guild.id)
+
     async def process_commands(self, message: discord.Message):
         ctx = await self.get_context(message, cls=Context)
         if not ctx.valid:
@@ -113,5 +120,5 @@ async def get_prefix(mousey: Mousey, message: discord.Message):
     if message.guild is None:
         return mentions
 
-    guild_prefixes = ['~?']  # todo: get from config
-    return mentions + guild_prefixes
+    config = await mousey.get_config(message.guild)
+    return mentions + config.get('prefixes', [])
