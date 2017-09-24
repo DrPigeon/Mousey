@@ -19,9 +19,7 @@ class Config(Cog):
             config = {
                 'logging': {
                     'messages': True
-                }, 'commands': {
-                    'prefixes': ['~?']
-                }
+                }, 'prefixes': ['~?']
             }
             return config
         return {}
