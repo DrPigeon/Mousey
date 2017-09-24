@@ -23,9 +23,11 @@ and fill it our with your credentials.
 # Requirements
 
 - Python 3.6
+  - aiodns
   - aiohttp
   - aioredis
   - asyncpg
+  - cchardet
   - discord.py (1.0 or above), voice branch
   - emoji
   - markovify
