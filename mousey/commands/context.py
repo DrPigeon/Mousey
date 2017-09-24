@@ -4,6 +4,12 @@ from discord.ext import commands
 
 
 class Context(commands.Context):
+    async def send(self, content: str=None, *, avoid_bots: bool=True, **kwargs):
+        if content is not None and avoid_bots:
+            # don't add a zws if the message is a codeblock as this adds a newline at the start of the message
+            content = f'\N{ZERO WIDTH SPACE}{content}' if not content.startswith('`') else content
+        return await super().send(content, **kwargs)
+
     async def ok(self):
         """Adds an approval emoji to the current message or sends it to the current channel."""
         if self.channel.permissions_for(self.me).external_emojis and self.bot.approve_emoji is not None:

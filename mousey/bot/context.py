@@ -23,12 +23,8 @@ class Context(commands.Context):
         color = getattr(self.me, 'color', discord.Color.default())
         return color if color.value != 0 else DEFAULT_COLOR
 
-    async def send(self, content: str=None, *, avoid_bots: bool=True, **kwargs):
-        if content is not None:
-            if len(content) > 1999:
-                pass  # todo: create paste with content
-
-            if avoid_bots:
-                content = f'\N{ZERO WIDTH SPACE}{content}' if not content.startswith('`') else content
+    async def send(self, content: str=None, **kwargs):
+        if content is not None and len(content) > 1999:
+            pass  # todo: create paste with content
 
         return await super().send(content, **kwargs)
