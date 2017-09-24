@@ -145,7 +145,7 @@ class Markov(Cog):
 
     async def channel_is_private(self, channel):
         """
-        Returns whether a channel has more than 25% of guild population in it or the @everyone role can read it.
+        Returns whether a channel has more than 25% of guild population in it.
 
         Parameters
         ----------
