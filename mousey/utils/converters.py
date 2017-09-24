@@ -8,7 +8,8 @@ __all__ = (
 
 
 class MemberOrChannel(commands.Converter):
-    """Convert which attempts to convert to a member and user."""
+    """Converter which attempts to convert to a member or channel."""
+
     async def convert(self, ctx: Context, argument: str):
         try:
             return await commands.MemberConverter().convert(ctx, argument)
