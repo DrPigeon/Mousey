@@ -72,7 +72,7 @@ class BotBase(GroupMixin, commands.bot.BotBase):
 
         files = path.glob('**/*.py')
         for file in files:
-            if not file.is_file() or file.stem == '__init__':
+            if file.stem == '__init__':
                 continue
 
             # remove .py extension and replace / with . for proper import format
