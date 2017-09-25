@@ -19,6 +19,9 @@ class Stats(Cog):
 
         rtt: time to send a message (round trip time, http latency)
         ws:  delta between last HEARTBEAT and HEARTBEAT ACK (websocket)
+        gw:  difference between message timestamp and arrival (gateway lag)
+
+        gw may be slightly inaccurate due to discords and the servers clock not being in sync.
         """
         arrival = datetime.datetime.utcnow()
 
