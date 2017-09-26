@@ -83,7 +83,7 @@ class Testing(Cog):
     @commands.group()
     async def convert(self, ctx: Context):
         """Testing of converters."""
-        raise commands.NoSubCommand()
+        raise commands.NoSubCommand(ctx)
 
     @convert.command()
     async def multi(self, ctx: Context, *, words: TwoWords, rest: str):

@@ -61,10 +61,7 @@ class Monitor(Cog):
             error = sentence(str(error))
             return await ctx.send(f'Missing argument! {error} See "{prefix}help {command}" for information.')
 
-        if isinstance(error, commands.NoSubCommand):
-            return await ctx.send(f'No subcommand passed! See "{prefix}help {command}" for a list of subcommands.')
-
-        if isinstance(error, (commands.InsufficientPermissions, TestError)):
+        if isinstance(error, (commands.InsufficientPermissions, commands.NoSubCommand, TestError)):
             return await ctx.send(str(error))
 
         # no need to have the extra traceback for the CommandInvokeError raising

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from discord.ext.commands.errors import *
 
+from .context import Context
+
 
 __all__ = (
     'BadArgument',
@@ -34,4 +36,9 @@ class InsufficientPermissions(CheckFailure):
 
 class NoSubCommand(CommandError):
     """Exception which can be raised in empty command groups, triggers an informative error message."""
-    pass
+
+    def __init__(self, ctx: Context):
+        self.message = f'No subcommand used! See "{ctx.prefix} {ctx.command}" for a list of available commands!'
+
+    def __str__(self):
+        return self.message
