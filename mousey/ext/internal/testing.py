@@ -34,12 +34,10 @@ class TwoWords(commands.Converter, commands.ViewConverter):
 
 
 class Optional(commands.Converter):
-    """Converter which just returns the whole argument if it's not a number, to test default consume all parameters."""
+    """Optional number parameter, returns the argument if it's not a digit."""
     async def convert(self, ctx: Context, argument: str):
-        words = argument.split()
-        if words[0].isdigit():
-            rest = ' '.join(words[1:])
-            return words[0], commands.RecalledArgument(rest)
+        if argument.isdigit():
+            return int(argument)
         return commands.RecalledArgument(argument)
 
 
@@ -98,7 +96,7 @@ class Testing(Cog):
         await ctx.send(f'first two words: {words}, rest: {rest}')
 
     @convert.command()
-    async def optional(self, ctx: Context, *, optional: Optional='this is default', rest: str):
+    async def optional(self, ctx: Context, optional: Optional='this is default', *, rest: str):
         """Optional number argument, then consume rest."""
         await ctx.send(f'optional: {optional}, rest: {rest}')
 

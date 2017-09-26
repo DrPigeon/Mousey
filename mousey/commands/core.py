@@ -5,8 +5,8 @@ import discord
 from discord.ext import commands
 
 from .context import Context
-from .converter import ViewConverter
-from .errors import InsufficientPermissions, MissingRequiredArgument
+from .converter import ViewConverter, quoted_word
+from .errors import CommandError, BadArgument, InsufficientPermissions, MissingRequiredArgument
 
 
 __all__ = (
@@ -63,39 +63,50 @@ class Command(commands.Command):
 
         self.typing = typing
 
-    async def transform_positional(self, ctx: Context, param):
-        # this is the transform coro copied with checks for ViewConverters and RecalledArguments
+    async def transform(self, ctx: Context, param):
         required = param.default is param.empty
         converter = self._get_converter(param)
+        consume_rest_is_special = param.kind == param.KEYWORD_ONLY and not self.rest_is_raw
 
         view = ctx.view
         view.skip_ws()
 
         if view.eof:
+            if param.kind == param.VAR_POSITIONAL:
+                raise RuntimeError()  # break the loop
             if required:
                 raise MissingRequiredArgument(param)
             return param.default
 
         if inspect.isclass(converter) and issubclass(converter, ViewConverter):
             argument = view
+        elif consume_rest_is_special:
+            argument = view.read_rest().strip()
         else:
-            argument = view.read_rest()
+            argument = quoted_word(view)
 
-        result = await self.do_conversion(ctx, converter, argument)
+        try:
+            result = await self.do_conversion(ctx, converter, argument)
+        except CommandError as e:
+            raise e
+        except Exception as e:
+            try:
+                name = converter.__name__
+            except AttributeError:
+                name = converter.__class__.__name__
 
-        if not result:
+            raise BadArgument('Converting to "{}" failed for parameter "{}".'.format(name, param.name)) from e
+
+        if not result or isinstance(result, RecalledArgument):
             if required:
                 raise MissingRequiredArgument(param)
+
+            if isinstance(result, RecalledArgument):
+                view.index -= len(result.argument)
             return param.default
 
-        if isinstance(result, RecalledArgument):
-            if required:
-                raise MissingRequiredArgument(param)
-            view.index -= len(result.argument)
-            return param.default
-
-        if isinstance(result, tuple) and isinstance(result[1], RecalledArgument):
-            result, recalled = result
+        if isinstance(result, tuple) and isinstance(result[-1], RecalledArgument):
+            *result, recalled = result
             view.index -= len(recalled.argument)
             return result
         return result
@@ -134,7 +145,7 @@ class Command(commands.Command):
                     kwargs[name] = await self.do_conversion(ctx, converter, argument)
                     break
 
-                kwargs[name] = await self.transform_positional(ctx, param)
+                kwargs[name] = await self.transform(ctx, param)
 
             elif param.kind == param.VAR_POSITIONAL:
                 while not view.eof:
