@@ -50,7 +50,6 @@ class Stats(Cog):
         """
         embed = discord.Embed(description=inspect.cleandoc(description), color=ctx.color)
         embed.set_author(name='Mousey', icon_url=self.mousey.user.avatar_url)
-        embed.set_footer(text='')
 
         embed.add_field(name='Python Version', value=platform.python_version())
         embed.add_field(name='Discord.py Version', value=discord.__version__)
