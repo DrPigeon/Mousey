@@ -95,7 +95,7 @@ class Command(commands.Command):
             except AttributeError:
                 name = converter.__class__.__name__
 
-            raise BadArgument('Converting to "{}" failed for parameter "{}".'.format(name, param.name)) from e
+            raise BadArgument(f'Converting to "{name}" failed for parameter "{param.name}".') from e
 
         if not result or isinstance(result, RecalledArgument):
             if required:
@@ -103,12 +103,15 @@ class Command(commands.Command):
 
             if isinstance(result, RecalledArgument):
                 view.index -= len(result.argument)
-            return param.default
+            result = param.default
 
-        if isinstance(result, tuple) and isinstance(result[-1], RecalledArgument):
+        elif isinstance(result, tuple) and isinstance(result[-1], RecalledArgument):
             *result, recalled = result
             view.index -= len(recalled.argument)
-            return result
+
+            if len(result) == 1:
+                result = result[0]
+
         return result
 
     async def _parse_arguments(self, ctx: Context):
