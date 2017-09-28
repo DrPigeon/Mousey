@@ -1,7 +1,7 @@
 # Mousey
 
 [![python](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/)
-[![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/FrostLuma/Mousey/blob/master/LICENSE)
+[![license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/FrostLuma/Mousey/blob/master/LICENSE)
 [![discord](https://discordapp.com/api/guilds/288369367769677826/widget.png)](http://discord.gg/Bd7BuGh)
 
 Discord Bot written by FrostLuma to provide powerful moderation and utility features.
