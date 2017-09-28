@@ -27,7 +27,9 @@ class Config(Cog):
         async with self.db.acquire() as conn:
             query = 'SELECT config FROM guilds WHERE guild_id = $1'
             result = await conn.fetchval(query, guild_id)
-        return json.loads(result)
+
+        # if we just joined a guild and load the config the guild row might not exist yet
+        return json.loads(result) if result is not None else {}
 
     async def _put(self, guild_id: int, config: dict):
         config = json.dumps(config)
