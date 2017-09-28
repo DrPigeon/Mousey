@@ -20,7 +20,7 @@ class UnhandledTestError(commands.CommandError):
 class TwoWords(commands.Converter, commands.ViewConverter):
     """Converter which shows off the usage of ViewConverters and RecalledArguments."""
     async def convert(self, ctx: Context, view: commands.StringView):
-        # the view can be used to iterate over words using the words meth. ViewConveter has
+        # the view can be used to iterate over words using the words meth. ViewConverter has
         words = []
         for word in self.words(view):
             words.append(word)
