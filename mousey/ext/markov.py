@@ -43,7 +43,7 @@ class Markov(Cog):
         target = target or ctx.author
 
         # check if message logging is even enabled in this guild
-        config = await self.mousey.get_config(ctx.guild)
+        config = await self.mousey.config.get(ctx.guild.id)
 
         if config.get('logging', {}).get('messages', False) is False:
             return await ctx.send(f'{DENY_EMOJI} Markov can\'t be used as message logging is not enabled.')
@@ -129,7 +129,6 @@ class Markov(Cog):
 
             public_channels.append(channel.id)
 
-        # no public channels
         if not public_channels:
             raise NoMessages(f'{DENY_EMOJI} No public target channel could be found. Can\'t generate sentence.')
 

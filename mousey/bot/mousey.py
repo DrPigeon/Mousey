@@ -90,15 +90,16 @@ class Mousey(commands.AutoShardedBot):
             return 0
         return time.monotonic() - self._uptime
 
+    @property
+    def config(self):
+        """Returns the config cog, may be None if not loaded."""
+        return self.get_cog('Config')
+
     async def is_owner(self, user: Union[discord.Member, discord.User]):
         return user.id in BOT_OWNERS  # to allow me using my alt
 
     async def is_admin(self, user: Union[discord.Member, discord.User]):
         return user.id in BOT_OWNERS  # todo: allow adding more admins via commands, store them
-
-    async def get_config(self, guild: discord.Guild) -> dict:
-        """Returns the config for a specified guild."""
-        return await self.get_cog('Config').get(guild.id)
 
     async def process_commands(self, message: discord.Message):
         ctx = await self.get_context(message, cls=Context)
@@ -120,5 +121,5 @@ async def get_prefix(mousey: Mousey, message: discord.Message):
     if message.guild is None:
         return mentions
 
-    config = await mousey.get_config(message.guild)
+    config = await mousey.config.get(message.guild.id)
     return mentions + config.get('prefixes', [])
