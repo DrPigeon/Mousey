@@ -26,7 +26,7 @@ def sentence(content: str) -> str:
     return content[0].upper() + content[1:]
 
 
-class Monitor(Cog):
+class Errors(Cog):
     """Monitors errors, gives the user useful error messages and reports them internally."""
 
     def __init__(self, mousey: Mousey):
@@ -116,4 +116,4 @@ class Monitor(Cog):
 
 
 def setup(mousey: Mousey):
-    mousey.add_cog(Monitor(mousey))
+    mousey.add_cog(Errors(mousey))
