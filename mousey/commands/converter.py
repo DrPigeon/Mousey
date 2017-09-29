@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 import enum
-from typing import Generator
 
 from discord.ext.commands.converter import *
-from discord.ext.commands.view import quoted_word, StringView
 
 from .context import Context
+from .core import RecalledArgument
 from .errors import BadArgument
 
 
@@ -20,29 +19,28 @@ __all__ = (
     'IDConverter',
     'InviteConverter',
     'MemberConverter',
+    'Optional',
     'RoleConverter',
-    'StringView',
     'TextChannelConverter',
     'UserConverter',
-    'ViewConverter',
     'VoiceChannelConverter',
 )
 
 
-class ViewConverter:
+class Optional(Converter):
     """
-    Converters inheriting from this class do not get the argument passed as a string, but rather the StringView.
-
-    This makes it convenient to write multi word converters, as the words method allows getting one quoted
-    word from the view at a time.
+    Class which takes a Converter as an argument and makes it an optional argument by returning nothing
+    on conversion failure.
+    If a default is set for this parameter it will be used, otherwise the typical MissingRequiredArgument is raised.
     """
+    def __init__(self, converter):
+        self.converter = converter
 
-    @staticmethod
-    def words(view: StringView) -> Generator[str, None, None]:
-        """Yields each argument from a given StringView."""
-        while not view.eof:
-            view.skip_ws()
-            yield quoted_word(view)
+    async def convert(self, ctx, argument):
+        try:
+            return await ctx.command.do_conversion(ctx, self.converter, argument)
+        except (BadArgument, ValueError, TypeError):
+            return RecalledArgument(argument)
 
 
 # almost copied from https://github.com/slice/dogbot/blob/master/dog/core/utils/enum.py

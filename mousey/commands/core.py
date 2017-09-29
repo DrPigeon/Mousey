@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 import inspect
+from typing import Generator
 
 import discord
 from discord.ext import commands
+from discord.ext.commands.view import quoted_word, StringView
 
 from .context import Context
-from .converter import ViewConverter, quoted_word
 from .errors import CommandError, BadArgument, InsufficientPermissions, MissingRequiredArgument
 
 
@@ -21,8 +22,11 @@ __all__ = (
     'has_permissions',
     'is_nsfw',
     'is_owner',
+    'quoted_word',
     'RecalledArgument',
     'schedule',
+    'StringView',
+    'ViewConverter',
 )
 
 # reassignment to have fewer imports in the actual bot code
@@ -45,6 +49,22 @@ class RecalledArgument:
 
     def __init__(self, argument: str):
         self.argument = argument
+
+
+class ViewConverter:
+    """
+    Converters inheriting from this class do not get the argument passed as a string, but rather the StringView.
+
+    This makes it convenient to write multi word converters, as the words method allows getting one quoted
+    word from the view at a time.
+    """
+
+    @staticmethod
+    def words(view: StringView) -> Generator[str, None, None]:
+        """Yields each argument from a given StringView."""
+        while not view.eof:
+            view.skip_ws()
+            yield quoted_word(view)
 
 
 class Command(commands.Command):
