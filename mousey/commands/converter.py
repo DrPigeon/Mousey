@@ -29,14 +29,15 @@ __all__ = (
 
 class Optional(Converter):
     """
-    Class which takes a Converter as an argument and makes it an optional argument by returning nothing
-    on conversion failure.
-    If a default is set for this parameter it will be used, otherwise the typical MissingRequiredArgument is raised.
+    Class which takes a Converter as an argument and makes it an optional.
+    This is achieved by returning the argument for the parser to re-use on the next parameter.
+
+    .. note:: If no default value is set for this parameter MissingRequiredArgument is raised
     """
     def __init__(self, converter):
         self.converter = converter
 
-    async def convert(self, ctx, argument):
+    async def convert(self, ctx: Context, argument: str):
         try:
             return await ctx.command.do_conversion(ctx, self.converter, argument)
         except (BadArgument, ValueError, TypeError):
