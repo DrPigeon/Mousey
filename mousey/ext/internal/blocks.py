@@ -44,7 +44,7 @@ class Blocks(Cog):
         await ctx.ok()
 
     @commands.command()
-    async def blocked(self, ctx: Context, user: discord.User):
+    async def blocked(self, ctx: Context, *, user: discord.User):
         """Shows if someone is blocked and the reason."""
         async with self.db.acquire() as conn:
             query = 'SELECT reason FROM blocks WHERE user_id = $1'
@@ -56,7 +56,7 @@ class Blocks(Cog):
         await ctx.send(f'{user} is blocked for: {result}')
 
     @commands.command()
-    async def unblock(self, ctx: Context, user: discord.User):
+    async def unblock(self, ctx: Context, *, user: discord.User):
         """Globally block a user."""
         async with self.db.acquire() as conn:
             query = 'DELETE FROM blocks WHERE user_id = $1'
