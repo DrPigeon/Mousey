@@ -99,7 +99,11 @@ class Mousey(commands.AutoShardedBot):
         return user.id in BOT_OWNERS  # to allow me using my alt
 
     async def is_admin(self, user: Union[discord.Member, discord.User]):
-        return user.id in BOT_OWNERS  # todo: allow adding more admins via commands, store them
+        if await self.is_owner(user):
+            return True
+
+        with await self.redis as conn:
+            return await conn.sismember('mousey:admins', user.id)
 
     async def process_commands(self, message: discord.Message):
         ctx = await self.get_context(message, cls=Context)

@@ -77,6 +77,32 @@ class Owner(Cog):
         """
         raise NotImplementedError()
 
+    @commands.group()
+    async def admins(self, ctx: Context):
+        raise commands.NoSubCommand(ctx)
+
+    @admins.command()
+    async def add(self, ctx: Context, *, user: discord.User):
+        """Add a user as a bot admin."""
+        with await self.redis as conn:
+            await conn.sadd('mousey:admins', user.id)
+        await ctx.ok()
+
+    @admins.command()
+    async def status(self, ctx: Context, *, user: discord.User):
+        """Add a user as a bot admin."""
+        if await self.mousey.is_admin(user):
+            await ctx.send(f'{user} is a bot admin.')
+        else:
+            await ctx.send(f'{user} is not a bot admin.')
+
+    @admins.command()
+    async def remove(self, ctx: Context, *, user: discord.User):
+        """Remove a user from bot admins."""
+        with await self.redis as conn:
+            await conn.srem('mousey:admins', user.id)
+        await ctx.ok()
+
     @commands.command(typing=True)
     async def sql(self, ctx: commands.Context, *, statement: no_codeblock):
         """Execute SQL."""
