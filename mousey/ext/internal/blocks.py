@@ -57,7 +57,7 @@ class Blocks(Cog):
 
     @commands.command()
     async def unblock(self, ctx: Context, *, user: discord.User):
-        """Globally block a user."""
+        """Globally unblock a user."""
         async with self.db.acquire() as conn:
             query = 'DELETE FROM blocks WHERE user_id = $1'
             await conn.execute(query, user.id)
