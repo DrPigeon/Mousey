@@ -38,7 +38,7 @@ class NoSubCommand(CommandError):
     """Exception which can be raised in empty command groups, triggers an informative error message."""
 
     def __init__(self, ctx: Context):
-        self.message = f'No subcommand used! See "{ctx.prefix} {ctx.command}" for a list of available commands!'
+        self.message = f'No subcommand used! See "{ctx.prefix}help {ctx.command}" for a list of available commands!'
 
     def __str__(self):
         return self.message
