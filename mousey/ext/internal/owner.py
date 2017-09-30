@@ -90,7 +90,7 @@ class Owner(Cog):
 
     @admins.command()
     async def status(self, ctx: Context, *, user: discord.User):
-        """Add a user as a bot admin."""
+        """Show whether a user is a bot admin or not."""
         if await self.mousey.is_admin(user):
             await ctx.send(f'{user} is a bot admin.')
         else:
@@ -98,7 +98,7 @@ class Owner(Cog):
 
     @admins.command()
     async def remove(self, ctx: Context, *, user: discord.User):
-        """Remove a user from bot admins."""
+        """Remove a user from being bot admin."""
         with await self.redis as conn:
             await conn.srem('mousey:admins', user.id)
         await ctx.ok()
