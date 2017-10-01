@@ -13,8 +13,8 @@ class Admin(Cog):
     @commands.command()
     async def reply(self, ctx: Context, user: discord.User, *, message: str):
         """Reply to feedback. This sends the user a direct message."""
-        embed = discord.Embed(title='Feedback Reply', description=message, color=ctx.color)
-        embed.set_author(name=f'{ctx.author} {ctx.author.id}', icon_url=ctx.author.avatar_url)
+        embed = discord.Embed(description=message, color=ctx.color)
+        embed.set_author(name=str(ctx.author), icon_url=ctx.author.avatar_url)
         embed.set_footer(text='To respond to this please use the feedback command again!')
 
         try:
