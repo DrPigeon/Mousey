@@ -6,7 +6,8 @@ import time
 
 import discord
 
-from mousey import Cog, commands, Context, Mousey, utils
+from mousey import Cog, commands, Context, Mousey, __version__
+from mousey.utils import human_delta, shell
 
 
 class Stats(Cog):
@@ -38,35 +39,48 @@ class Stats(Cog):
     @commands.command()
     async def uptime(self, ctx: Context):
         """Shows Mouseys uptime."""
-        delta = utils.human_delta(self.mousey.uptime)
+        delta = human_delta(self.mousey.uptime)
         await ctx.send(f'I\'ve been running for {delta}.')
 
     @commands.command()
     async def about(self, ctx: Context):
         """Shows some information and helpful links around Mousey."""
-        description = """
-        Mousey is FrostLuma#0005s personal discord bot with a focus on powerful moderation and utility commands.
-        For help, questions and updates join the [support guild](https://discord.gg/SjBdRr7)!
+        guild = '[support guild](https://discord.gg/SjBdRr7)'
+        github = '[GitHub](https://github.com/FrostLuma/Mousey)'
+
+        description = f"""
+        Discord Bot written by FrostLuma to provide moderation and utility features.
+        Join the {guild} for questions and updates and see the source code on {github}!
         """
         embed = discord.Embed(description=inspect.cleandoc(description), color=ctx.color)
         embed.set_author(name='Mousey', icon_url=self.mousey.user.avatar_url)
 
+        branch_name = await shell('git rev-parse --abbrev-ref HEAD')
+        branch = f'[{branch_name}](https://github.com/FrostLuma/Mousey/tree/{branch_name})'
+        commit = await shell('git show --pretty="[%h](https://github.com/FrostLuma/Mousey/commit/%H)" --no-patch')
+
+        embed.add_field(name='Branch', value=branch)
+        embed.add_field(name='Commit', value=commit)
+        embed.add_field(name='Version', value=__version__)
+
+        app_info = await self.mousey.application_info()
+        owner = app_info.owner
+
         embed.add_field(name='Python Version', value=platform.python_version())
         embed.add_field(name='Discord.py Version', value=discord.__version__)
-        embed.add_field(name='\u200b', value='\u200b')
+        embed.add_field(name='Owner', value=str(owner))
 
-        delta = utils.human_delta(self.mousey.uptime)
+        uptime = human_delta(self.mousey.uptime)
 
         process = self.mousey.process
         with process.oneshot():
             cpu_percent = process.cpu_percent()
             memory_bytes = process.memory_full_info().rss
-
         memory_mib = memory_bytes / (1024 * 1024)  # 1 MiB in bytes
 
-        embed.add_field(name='Uptime', value=delta)
-        embed.add_field(name='Cpu Usage', value=f"{cpu_percent}%")
-        embed.add_field(name='Memory Usage', value=f"{memory_mib:.2f}MiB")
+        embed.add_field(name='Uptime', value=uptime)
+        embed.add_field(name='Cpu Usage', value=f'{cpu_percent}%')
+        embed.add_field(name='Memory Usage', value=f"{memory_mib:.3f}MiB")
 
         await ctx.send(embed=embed)
 

@@ -1,0 +1,12 @@
+# -*- coding: utf-8 -*-
+import asyncio
+
+
+async def shell(command: str) -> str:
+    """Runs a subprocess in shell and returns the output."""
+    process = await asyncio.create_subprocess_shell(
+        command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+    )
+    # stdout and stderr are separate
+    results = await process.communicate()
+    return ''.join(x.decode('utf-8') for x in results)

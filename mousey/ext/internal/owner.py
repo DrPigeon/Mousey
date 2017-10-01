@@ -11,7 +11,7 @@ import discord
 
 from mousey.const import DENY_EMOJI
 from mousey import Cog, commands, Context, Mousey
-from mousey.utils import Table, Timer
+from mousey.utils import shell, Table, Timer
 
 
 def no_codeblock(text: str) -> str:
@@ -33,14 +33,6 @@ def no_codeblock(text: str) -> str:
     return text
 
 
-async def run_subprocess(cmd: str) -> str:
-    """Runs a subprocess and returns the output."""
-    process = await asyncio.create_subprocess_shell(
-        cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
-    results = await process.communicate()
-    return ''.join(x.decode('utf-8') for x in results)
-
-
 class Owner(Cog):
     """Commands to make running Mousey easier and make the experience more pleasant."""
 
@@ -57,14 +49,14 @@ class Owner(Cog):
     async def shell(self, ctx: commands.Context, *, cmd: no_codeblock):
         """Run a subprocess using shell."""
         async with ctx.typing():
-            result = await run_subprocess(cmd)
+            result = await shell(cmd)
         await ctx.send(f'```{result}```')
 
     @commands.command()
     async def update(self, ctx: commands.Context):
         """Update from git."""
         async with ctx.typing():
-            result = await run_subprocess('git pull')
+            result = await shell('git pull')
         await ctx.send(f'```{result}```')
 
     @commands.command()
