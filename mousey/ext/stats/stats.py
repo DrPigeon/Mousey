@@ -13,6 +13,11 @@ from mousey.utils import human_delta, shell
 class Stats(Cog):
     """Statistics about Mousey."""
 
+    def __init__(self, mousey: Mousey):
+        super().__init__(mousey)
+
+        self.owner: discord.User = None
+
     @commands.command(aliases=['ping'])
     async def rtt(self, ctx: Context):
         """
@@ -63,8 +68,11 @@ class Stats(Cog):
         embed.add_field(name='Commit', value=commit)
         embed.add_field(name='Version', value=__version__)
 
-        app_info = await self.mousey.application_info()
-        owner = app_info.owner
+        if self.owner is None:
+            app_info = await self.mousey.application_info()
+            self.owner = owner = app_info.owner
+        else:
+            owner = self.owner
 
         embed.add_field(name='Python Version', value=platform.python_version())
         embed.add_field(name='Discord.py Version', value=discord.__version__)
