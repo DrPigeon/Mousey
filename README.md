@@ -18,7 +18,7 @@ to find out how to utilise all of Mouseys features!
 
 To run your own instance simply install the requirements,
 copy and rename `config_example.py` to `config.py`
-and fill it our with your credentials.
+and fill it out with your credentials.
 
 # Requirements
 
