@@ -107,7 +107,6 @@ class Owner(Cog):
         try:
             with Timer() as t:
                 result = await coro(statement)
-
         except asyncpg.PostgresError as e:
             return await ctx.send(f'{DENY_EMOJI} Failed to execute! {type(e).__name__}: {e}')
 
@@ -164,7 +163,7 @@ class Owner(Cog):
 
         await ctx.send(f'```py\n{result}```')
 
-    @commands.command(name='exec', typing=True)
+    @commands.command(name='exec')
     async def exec_(self, ctx: commands.Context, *, code: no_codeblock):
         """Run code."""
         env = {
@@ -187,6 +186,8 @@ class Owner(Cog):
         code = textwrap.indent(code, '    ')
         func = f"async def cheese():\n{code}"
 
+        # indicator the command is running, as this is not a typing command
+        await ctx.message.add_reaction('\N{HOURGLASS WITH FLOWING SAND}')
         try:
             with contextlib.redirect_stdout(stdout):
                 exec(func, env)
@@ -203,6 +204,7 @@ class Owner(Cog):
                 await ctx.send(f'```py\n{output}```')
 
             await ctx.ok()
+            await ctx.message.remove_reaction('\N{HOURGLASS WITH FLOWING SAND}', ctx.guild.me)
         except Exception:
             trace = traceback.format_exc(limit=10)
             await ctx.send(f'```py\n{trace}```')
