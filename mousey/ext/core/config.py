@@ -18,10 +18,9 @@ class Config(Cog):
         self.configs[guild_id] = config = await self._get(guild_id)
         return config
 
-    async def put(self, guild_id: int, config: dict):
+    async def save(self, guild_id: int):
         """Save a guild config. This stores it in the database and in memory."""
-        self.configs[guild_id] = config
-        await self._put(guild_id, config)
+        await self._save(guild_id)
 
     async def _get(self, guild_id: int):
         async with self.db.acquire() as conn:
@@ -31,8 +30,8 @@ class Config(Cog):
         # if we just joined a guild and load the config the guild row might not exist yet
         return json.loads(result) if result is not None else {}
 
-    async def _put(self, guild_id: int, config: dict):
-        config = json.dumps(config)
+    async def _save(self, guild_id: int):
+        config = json.dumps(self.configs[guild_id])
 
         async with self.db.acquire() as conn:
             query = 'UPDATE guilds SET config = $1 WHERE guild_id = $2'
