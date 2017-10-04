@@ -1,22 +1,67 @@
 # -*- coding: utf-8 -*-
 import datetime
 import inspect
+import logging
 import platform
 import time
 
 import discord
 
 from mousey import Cog, commands, Context, Mousey, __version__
-from mousey.utils import human_delta, shell
+from mousey.const import GUILDS_CHANNEL
+from mousey.utils import clean_text, human_delta, shell
+
+
+log = logging.getLogger(__name__)
 
 
 class Stats(Cog):
-    """Statistics about Mousey."""
+    """Bot statistics and statistic reporting to various places."""
 
     def __init__(self, mousey: Mousey):
         super().__init__(mousey)
 
         self.owner: discord.User = None
+
+    async def on_ready(self):
+        await self.post_stats()
+
+    async def on_guild_join(self, guild: discord.Guild):
+        log.info(f'joined guild {guild.name} {guild.id}')
+
+        try:
+            msg = (f'\N{LARGE BLUE CIRCLE} {guild.name} {guild.id} - '
+                   f'{len(guild.roles)} role(s) - {guild.member_count} members - {guild.owner}')
+
+            guild_feed = self.mousey.get_channel(GUILDS_CHANNEL)
+            await guild_feed.send(clean_text(guild_feed, msg))
+        except discord.HTTPException:
+            pass
+
+        await self.post_stats()
+
+    async def on_guild_remove(self, guild: discord.Guild):
+        log.info(f'left guild {guild.name} {guild.id}')
+
+        try:
+            msg = f'\N{LARGE RED CIRCLE} {guild.name} {guild.id}'
+
+            guild_feed = self.mousey.get_channel(GUILDS_CHANNEL)
+            await guild_feed.send(clean_text(guild_feed, msg))
+        except discord.HTTPException:
+            pass
+
+        await self.post_stats()
+
+    async def on_command_completion(self, ctx: commands.Context):
+        # log how many commands are used in which guilds
+        guild_id = ctx.guild.id if ctx.guild is not None else ctx.channel.id
+
+        async with self.db.acquire() as conn:
+            query = 'INSERT INTO commands (guild_id, author_id, command, used_at) VALUES ($1, $2, $3, $4)'
+            await conn.execute(
+                query, guild_id, ctx.author.id, ctx.command.qualified_name, datetime.datetime.utcnow()
+            )
 
     @commands.command(aliases=['ping'])
     async def rtt(self, ctx: Context):
@@ -101,6 +146,12 @@ class Stats(Cog):
     async def mousey_stats(self, ctx: Context):
         """Shows detailed statistics about Mousey."""
         pass  # todo
+
+    async def post_stats(self):
+        if self.mousey.user.id != 288369203046645761:
+            return  # no need to report on test bots, forks
+
+        pass  # since Mousey is not listed anywhere yet~
 
 
 def setup(mousey: Mousey):

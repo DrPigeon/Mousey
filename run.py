@@ -10,13 +10,13 @@ from config import POSTGRES_CRED, REDIS_CRED, TOKEN
 from mousey import Mousey
 
 
-asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 handler = logging.FileHandler(filename='mousey.log', encoding='utf-8', mode='a')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
+
+asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 
 async def run():

@@ -16,5 +16,5 @@ STEAM_API_KEY = ''
 # this API endpoint is private
 REMOVED_GAME_ENDPOINT = ''
 
-# https://bots.discord.pw/ - leave this empty as Mousey only reports this statistic when the actual Mousey is running
-DBOTS_TOKEN = ''
+# https://paste.ee/
+PASTEE_TOKEN = ''

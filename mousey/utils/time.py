@@ -87,16 +87,6 @@ class Time:
         return cls(seconds), remaining
 
 
-class OptionalTime(Time):
-    @classmethod
-    async def convert(cls, ctx: commands.Context, argument: str):
-        """Attempts to convert to a time, may return the whole argument if no time is found."""
-        seconds, remaining = _from_human_time(argument)
-        if seconds == 0:
-            return remaining
-        return cls(seconds), remaining
-
-
 def human_delta(delta, *, short=True):
     """
     Converts to a human readable time delta.
