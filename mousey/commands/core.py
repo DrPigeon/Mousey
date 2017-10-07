@@ -287,28 +287,21 @@ def _has_permissions(ctx, target, **perms):
     if not missing:
         return True
 
-    # if the target is the bot raise a different error to make catching is easier
+    # if the target is the bot raise a different error to make catching it separately easier
     if target.id == ctx.me.id:
         raise InsufficientPermissions(*missing)
     raise MissingPermissions(*missing)
 
 
 def has_permissions(**perms):
-    """
-    Decorator to add a permission check to a command. This checks the bots and the users permissions.
-
-    See func _has_permissions for more details.
-    """
+    """Decorator to add a permission check to a command. This checks the bots and the users permissions."""
     def predicate(ctx: Context) -> bool:
         return _has_permissions(ctx, ctx.author, **perms) and _has_permissions(ctx, ctx.me, **perms)
     return check(predicate)
 
 
 def bot_has_permissions(**perms):
-    """
-    Decorator to add a permission check to a command. This checks the bots permissions.
-
-    See func _has_permissions for more details."""
+    """Decorator to add a permission check to a command. This checks the bots permissions."""
     def predicate(ctx: Context) -> bool:
         return _has_permissions(ctx, ctx.me, **perms)
     return check(predicate)
