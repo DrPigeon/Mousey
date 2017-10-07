@@ -14,7 +14,7 @@ I try to keep Mousey running 24/7,
 any downtime will be announced in advance in the support guild.
 
 Read the [documentation (TODO)](https://frostluma.github.io/Mousey/)
-to find out how to utilise all of Mouseys features!
+to find out how to utilise all of Mousey's features!
 
 To run your own instance simply install the requirements,
 copy and rename `config_example.py` to `config.py`
