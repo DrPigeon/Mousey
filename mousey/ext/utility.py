@@ -75,7 +75,7 @@ class Utility(Cog):
 
     @prefix.command(name='add')
     @commands.guild_only()
-    @commands.user_has_permissions(send_messages=True)
+    @commands.user_has_permissions(manage_guild=True)
     async def prefix_add(self, ctx: Context, prefix: str):
         """Add a new prefix. To have trailing spaces put it in quotes."""
         config = await self.mousey.config.get(ctx.guild.id)
