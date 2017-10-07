@@ -8,7 +8,7 @@ class Resources(Cog):
     """
     Resources for achievement hunting communities.
 
-    The commands are hidden due to them not being very useful to most of Mouseys audience.
+    These commands are hidden due to them not being very useful to most of Mouseys audience.
     """
 
     @commands.command(hidden=True)
