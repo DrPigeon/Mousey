@@ -25,6 +25,9 @@ class Context(commands.Context):
 
     async def send(self, content: str=None, **kwargs):
         if content is not None and len(content) > 1999:
-            pass  # todo: create paste with content
+            from mousey.utils.web import haste  # circular import woes
+
+            url = await haste(content, session=self.session)
+            content = f'Content too long! <{url}>'
 
         return await super().send(content, **kwargs)

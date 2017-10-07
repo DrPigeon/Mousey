@@ -38,7 +38,7 @@ async def get_json(url, *, session=None, headers=None, **kwargs):
         return await resp.json(content_type=None)
 
 
-async def haste(content: str, *, session=None) -> str:
+async def haste(content: str, *, session=None):
     """
     Creates a haste and returns the link to it.
 
