@@ -27,8 +27,8 @@ __all__ = (
 class InsufficientPermissions(CheckFailure):
     """Exception raised when the bot does not have permissions needed to execute a command."""
 
-    def __init__(self, **perms):
-        self.missing = ', '.join(x.replace('_', ' ') for x in perms.keys())
+    def __init__(self, *perms):
+        self.missing = ', '.join(x.replace('_', ' ') for x in perms)
 
     def __str__(self):
         return f'Can\'t execute command! I\'m missing the following permissions: {self.missing}'

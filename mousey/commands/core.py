@@ -7,7 +7,7 @@ from discord.ext import commands
 from discord.ext.commands.view import quoted_word, StringView
 
 from .context import Context
-from .errors import CommandError, BadArgument, InsufficientPermissions, MissingRequiredArgument
+from .errors import CommandError, BadArgument, InsufficientPermissions, MissingRequiredArgument, MissingPermissions
 
 
 __all__ = (
@@ -26,6 +26,7 @@ __all__ = (
     'RecalledArgument',
     'schedule',
     'StringView',
+    'user_has_permissions',
     'ViewConverter',
 )
 
@@ -34,9 +35,6 @@ check = commands.check
 guild_only = commands.guild_only
 is_nsfw = commands.is_nsfw
 is_owner = commands.is_owner
-
-
-# todo: permissions decorator
 
 
 class RecalledArgument:
@@ -250,33 +248,74 @@ def schedule(interval,  wait_until_ready=True):
     return decorator
 
 
-def has_permissions(*, check_bot=True, **perms):
+def _has_permissions(ctx, target, **perms):
     """
-    Decorator to add a permission check to a command. This checks the bots and the users permissions.
+    Checks whether the target has all given permissions in the current channel.
 
-    The permissions must match the names of the discord.Permissions attributes,
-    as falsy values are returned for unresolved permissions.
+    The permissions must match the attribute names of cls discord.Permissions.
+    https://discordpy.readthedocs.io/en/rewrite/api.html#permissions
 
     Parameters
     ----------
-    check_bot : bool
-        Whether the permissions of the bot should be checked, defaults to True
+    ctx : Context
+        The current context to look up permissions in
+    target : Union[discord.Member, discord.User]
+        The user to check the permissions of
     perms : dict
-        The permissions to check for
+        permission: required value pairs of permissions.
+
+    Returns
+    -------
+    bool
+        Whether the user has all the permissions
 
     Raises
     ------
     InsufficientPermissions
-        If the bot does not have all required permissions
+        If the target is the bot user and does not have all required permissions
     MissingPermissions
-        If the user does not have all required permissions
+        If any other user does not have all required permissions
     """
-    def decorator(func):
-        return func
-    return decorator
+    target_perms = ctx.channel.permissions_for(target)
+
+    # administrator means this user has all the other permissions
+    if target_perms.administrator:
+        return True
+
+    missing = [perm for perm in perms if not getattr(target_perms, perm, False)]
+
+    if not missing:
+        return True
+
+    # if the target is the bot raise a different error to make catching is easier
+    if target.id == ctx.me.id:
+        raise InsufficientPermissions(*missing)
+    raise MissingPermissions(*missing)
+
+
+def has_permissions(**perms):
+    """
+    Decorator to add a permission check to a command. This checks the bots and the users permissions.
+
+    See func _has_permissions for more details.
+    """
+    def predicate(ctx: Context) -> bool:
+        return _has_permissions(ctx, ctx.author, **perms) and _has_permissions(ctx, ctx.me, **perms)
+    return check(predicate)
 
 
 def bot_has_permissions(**perms):
-    def decorator(func):
-        return func
-    return decorator
+    """
+    Decorator to add a permission check to a command. This checks the bots permissions.
+
+    See func _has_permissions for more details."""
+    def predicate(ctx: Context) -> bool:
+        return _has_permissions(ctx, ctx.me, **perms)
+    return check(predicate)
+
+
+def user_has_permissions(**perms):
+    """Decorator to add a permission check to a command. This checks the only users (authors) permissions."""
+    def predicate(ctx: Context) -> bool:
+        return _has_permissions(ctx, ctx.author, **perms)
+    return check(predicate)

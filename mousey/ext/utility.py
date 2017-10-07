@@ -75,7 +75,7 @@ class Utility(Cog):
 
     @prefix.command(name='add')
     @commands.guild_only()
-    @commands.has_permissions(check_bot=False, manage_guild=True)
+    @commands.user_has_permissions(send_messages=True)
     async def prefix_add(self, ctx: Context, prefix: str):
         """Add a new prefix. To have trailing spaces put it in quotes."""
         config = await self.mousey.config.get(ctx.guild.id)
@@ -99,7 +99,7 @@ class Utility(Cog):
 
     @prefix.command(name='remove')
     @commands.guild_only()
-    @commands.has_permissions(check_bot=False, manage_guild=True)
+    @commands.user_has_permissions(manage_guild=True)
     async def prefix_remove(self, ctx: Context, prefix: str):
         """Remove a prefix. To remove a prefix with trailing spaces put it in quotes."""
         config = await self.mousey.config.get(ctx.guild.id)
