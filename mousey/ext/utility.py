@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import inspect
+
 import discord
 
 from mousey import Cog, commands, Context, Mousey
@@ -7,6 +9,34 @@ from mousey.const import DENY_EMOJI, FEEDBACK_CHANNEL
 
 class Utility(Cog):
     """Beep boop!"""
+
+    @commands.command(hidden=True)
+    async def beep(self, ctx: Context):
+        """Boop!"""
+        await ctx.send('boop')
+
+    @commands.command(hidden=True)
+    async def boop(self, ctx: Context):
+        """Beep!"""
+        await ctx.send('beep')
+
+    @commands.command(aliases=['github', 'gh'])
+    async def source(self, ctx: Context):
+        """Links Mouseys GitHub Repository."""
+        await ctx.send('You can find me on github at <https://github.com/FrostLuma/Mousey>!')
+
+    @commands.command(aliases=['highlightjs', 'highlight.js'])
+    async def highlight(self, ctx: Context):
+        """Sends an invite to the highlight.js reference guild."""
+        msg = """
+        Discord Highlight.js is a guild to help users with discord message formatting.
+
+        This ranges from using codeblocks with language highlights to create colorful messages to markdown.
+        Join and feel free to ask any questions you should have!
+
+        https://discord.gg/MDnm8TS
+        """
+        await ctx.send(inspect.cleandoc(msg))
 
     @commands.command()
     async def feedback(self, ctx: Context, *, message: str):
@@ -53,8 +83,8 @@ class Utility(Cog):
         if 'prefixes' not in config:
             config['prefixes'] = []
 
-        if len(prefix) > 20:
-            return await ctx.send(f'{DENY_EMOJI} prefixes may only be 20 characters long!')
+        if len(prefix) > 25:
+            return await ctx.send(f'{DENY_EMOJI} prefixes may only be 25 characters long!')
 
         if len(config['prefixes']) > 10:
             return await ctx.send(f'{DENY_EMOJI} you can only add 10 custom prefixes!')
@@ -112,6 +142,15 @@ class Utility(Cog):
         perms.view_audit_log = True
 
         await ctx.send(f'<{discord.utils.oauth_url(self.mousey.user.id, perms)}>')
+
+    @commands.command(name='tagme', hidden=True)
+    async def tag_me(self, ctx: Context):
+        """
+        Send a message which mentions you.
+
+        This is useful for android users, often mentions get stuck as ghost mentions, receiving a new mention fixes it.
+        """
+        await ctx.send(ctx.author.mention)
 
 
 def setup(mousey: Mousey):
